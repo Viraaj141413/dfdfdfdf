@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Antivirus Scanner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script>
+        // Detect if user is on mobile device and redirect if not on computer
+        window.onload = function() {
+            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                alert("This free antivirus scanner is only available for desktop computers. Please visit from a desktop device.");
+                document.body.innerHTML = "<div class='container text-center mt-5'><h1>Desktop Only</h1><p>This free antivirus scanner is only available for desktop computers. Please visit from a desktop device.</p></div>";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container initial-screen text-center">
+        <div class="disclaimer mb-3">
+            <small>FREE PREMIUM ANTIVIRUS SCAN - LIMITED TIME OFFER</small>
+        </div>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h2><i class="fas fa-shield-alt"></i> Free Premium Antivirus Scanner</h2>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="mb-4">Protect your computer from the latest threats</h4>
+                        <p>Our free antivirus scanner will check your computer for malware, viruses, and other security threats. Get protected now!</p>
+                        <div class="alert alert-danger blink" style="font-weight: bold; text-shadow: 0 0 5px red;">
+                            <i class="fas fa-exclamation-triangle"></i> CRITICAL ALERT: peaksfun.com has been HIJACKED! Run scan immediately!
+                        </div>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Multiple vulnerabilities detected! Your data may be at risk!
+                        </div>
+                        <button id="startButton" class="btn btn-danger btn-lg pulse-btn mt-3" style="font-size: 1.2rem;">
+                            <i class="fas fa-shield-alt"></i> START EMERGENCY SCAN
+                        </button>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>100% Safe & Trusted by over 50 million users worldwide. No credit card required.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="virus-simulator" class="virus-container hidden">
+        <!-- Loading screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="text-center">
+                <div class="spinner-border text-danger" role="status"></div>
+                <h2 class="text-danger mt-3">SCANNING SYSTEM...</h2>
+                <div class="progress mt-3">
+                    <div id="download-progress" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width: 0%"></div>
+                </div>
+                <div id="loading-status" class="mt-2">Initializing system scan...</div>
+            </div>
+        </div>
+
+        <!-- Main virus interface -->
+        <div id="virus-interface" class="hidden">
+            <div class="main-warning blink">
+                <i class="fas fa-skull-crossbones"></i> SYSTEM COMPROMISED <i class="fas fa-skull-crossbones"></i>
+            </div>
+            
+            <div class="info-panel">
+                <div class="title-bar">
+                    <i class="fas fa-exclamation-triangle"></i> PERSONAL DATA ACCESSED
+                </div>
+                <div class="info-content">
+                    <div class="info-section">
+                        <h4>Network Information</h4>
+                        <p>IP Address: <span id="ip-address">Loading...</span></p>
+                        <p>Location: <span id="location">Scanning...</span></p>
+                        <p>ISP Provider: <span id="isp-info">Retrieving...</span></p>
+                        <p>Postal Code: <span id="postal-info">Scanning...</span></p>
+                        <p>GPS Coordinates: <span id="coordinates-info">Locating...</span></p>
+                        <p>Distance: <span id="distance-info">Calculating...</span></p>
+                        <p>Network Type: <span id="network-info">Analyzing...</span></p>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h4>System Information</h4>
+                        <p>Device: <span id="device-info">Detecting...</span></p>
+                        <p>Browser: <span id="browser-info">Analyzing...</span></p>
+                        <p>Screen Resolution: <span id="screen-info">Scanning...</span></p>
+                        <p>CPU: <span id="cpu-info">Detecting...</span></p>
+                        <p>Language: <span id="language-info">Analyzing...</span></p>
+                        <p>Time Zone: <span id="time-info">Retrieving...</span></p>
+                        <p>Battery: <span id="battery-info">Accessing...</span></p>
+                        <p>Memory: <span id="memory-info">Reading...</span></p>
+                    </div>
+                    
+                    <div class="info-section">
+                        <h4>Privacy Information</h4>
+                        <p>Webcam: <span id="webcam-info">Checking...</span></p>
+                        <p>Microphone: <span id="microphone-info">Checking...</span></p>
+                        <p>Installed Fonts: <span id="fonts-info">Scanning...</span></p>
+                        <p>Storage Used: <span id="storage-info">Calculating...</span></p>
+                        <p>Saved Accounts: <span id="accounts-info">Searching...</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timer-container">
+                <div class="title-bar">
+                    <i class="fas fa-hourglass-end"></i> TIME REMAINING
+                </div>
+                <div class="timer" id="countdown">02:00</div>
+            </div>
+            
+            <div class="scan-container">
+                <div class="title-bar">
+                    <i class="fas fa-virus"></i> SYSTEM SCAN IN PROGRESS
+                </div>
+                <div class="progress mt-2">
+                    <div id="scan-progress" class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width: 0%"></div>
+                </div>
+                <div id="scan-status" class="mt-1">Scanning system files...</div>
+            </div>
+
+            <div id="popup-container"></div>
+            
+            <div id="security-message" class="security-message hidden">
+                <p>Press Ctrl+V to activate free antivirus protection</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="alarm-sound" preload="auto">
+        <source src="https://soundbible.com/mp3/Tornado_Siren_II-Delilah-747233690.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="glitch-sound" preload="auto">
+        <source src="https://soundbible.com/mp3/Computer_Error-SoundBible.com-399240061.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="beep-sound" preload="auto">
+        <source src="https://soundbible.com/mp3/Electronic_Chime-KevanGC-495939803.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
